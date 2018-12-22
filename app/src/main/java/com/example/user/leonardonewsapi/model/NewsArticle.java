@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NewsArticle {
+    final public static String articleUrl = "com.example.user.leonardonewsapi.articleUrl";
 
     final public String title;
     final public String description;

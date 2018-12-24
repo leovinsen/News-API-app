@@ -58,11 +58,11 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
         System.out.println(String.format("%d : publishedat: %s", position, article.publishedAt));
 
         //Get Date object of publication time
-        Date publishedTime = formatDate(article.publishedAt);
+        Date publishedTime = HelperMethods.formatDate(article.publishedAt);
 
         //Get time difference between current time and time of article publication
         //Then convert into a more user friendly string format
-        String dateString = getPrettyTimeDifference(timeDifference(publishedTime, new Date()));
+        String dateString = getPrettyTimeDifference(HelperMethods.timeDifference(publishedTime, new Date()));
 
         //Set time difference
         holder.mArticlePublishTime.setText(dateString);
@@ -137,49 +137,13 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
         Takes in a String variable that contains ISO 8601 timestamp
         Returns a Date object from that timestamp
      */
-    private Date formatDate(String dateString){
-        SimpleDateFormat format;
-        //If length > 20, the date contains milliseconds
-        //and will throw a ParseException if parsed with pattern "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        //Java.Time class is not used because DateTimeFormatter.ofPattern requires API 26 and above
 
-        //The following pattern includes milliseconds
-        if(dateString.length() > 20) format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        //The folowing pattern does not include milliseconds
-        else format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date date;
-        try {
-            date = format.parse(dateString);
-        } catch (ParseException e) {
-            date = null;
-            e.printStackTrace();
-        }
-
-        return date;
-    }
-
-    private long[] timeDifference(Date startDate, Date endDate){
-        if(startDate == null | endDate == null) return null;
-
-        long different = endDate.getTime() - startDate.getTime();
-        long secondsInMilli = 1000;
-        long minutesInMilli = secondsInMilli * 60;
-        long hoursInMilli = minutesInMilli * 60;
-
-        long elapsedHours = different / hoursInMilli;
-        different = different % hoursInMilli;
-
-        long elapsedMinutes = different / minutesInMilli;
-        different = different % minutesInMilli;
-
-        return new long[]{elapsedHours, elapsedMinutes};
-    }
 
     private String getPrettyTimeDifference(long[] timeDifferences){
         if(timeDifferences == null) return "Unable to get time difference";
         long elapsedHours = timeDifferences[0];
         long elapsedMinutes = timeDifferences[1];
-        String dateString = null;
+        String dateString;
         //Show in days
         if(elapsedHours == 0){
             if(elapsedMinutes == 0) dateString = "now";

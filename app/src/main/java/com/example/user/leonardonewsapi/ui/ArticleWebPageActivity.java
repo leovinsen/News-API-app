@@ -21,7 +21,7 @@ public class ArticleWebPageActivity extends AppCompatActivity{
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
         actionBar.setTitle("");
 
         Intent intent = getIntent();

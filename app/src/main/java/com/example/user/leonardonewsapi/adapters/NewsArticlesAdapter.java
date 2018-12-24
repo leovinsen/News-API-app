@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.user.leonardonewsapi.R;
 import com.example.user.leonardonewsapi.model.NewsArticle;
 import com.example.user.leonardonewsapi.ui.ArticleWebPageActivity;
+import com.example.user.leonardonewsapi.util.HelperMethods;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -103,7 +104,7 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
                         //In this loop, you'll filter through originalData and compare each item to charSequence.
                         //If you find a match, add it to your new ArrayList
                         //I'm not sure how you're going to do comparison, so you'll need to fill out this conditional
-                        if(article.title.contains(charSequence))
+                        if(HelperMethods.containsIgnoreCase(article.title, charSequence.toString()))
                         {
                             filterResultsData.add(article);
                         }
@@ -130,20 +131,7 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
         if(filteredData == null) return 0;
         return filteredData.size();
     }
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        CardView mCard;
-        TextView mArticleTitle;
-        TextView mArticlePublishTime;
-       ImageView mArticleThumbnail;
 
-        public MyViewHolder(View itemView) {
-            super(itemView);
-            mCard = itemView.findViewById(R.id.article_card);
-            mArticleTitle = itemView.findViewById(R.id.article_title);
-            mArticlePublishTime = itemView.findViewById(R.id.article_time);
-            mArticleThumbnail = itemView.findViewById(R.id.article_thumbnail);
-        }
-    }
 
     /*
         Takes in a String variable that contains ISO 8601 timestamp
@@ -206,6 +194,22 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
         }
 
         return dateString;
+    }
+
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        CardView mCard;
+        TextView mArticleTitle;
+        TextView mArticlePublishTime;
+        ImageView mArticleThumbnail;
+
+        public MyViewHolder(View itemView) {
+            super(itemView);
+            mCard = itemView.findViewById(R.id.article_card);
+            mArticleTitle = itemView.findViewById(R.id.article_title);
+            mArticlePublishTime = itemView.findViewById(R.id.article_time);
+            mArticleThumbnail = itemView.findViewById(R.id.article_thumbnail);
+        }
     }
 
 }

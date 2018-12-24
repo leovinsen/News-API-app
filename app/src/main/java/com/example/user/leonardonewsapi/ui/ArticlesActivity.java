@@ -10,6 +10,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -70,6 +71,7 @@ public class ArticlesActivity extends AppCompatActivity {
 
                 if (!recyclerView.canScrollVertically(1)) {
                     if (!searching) {
+                        Toast.makeText(ArticlesActivity.this,"Loading more articles...", Toast.LENGTH_LONG).show();
                         pageIndex++;
                         loadData(sourceId, pageSize, pageIndex);
                     }

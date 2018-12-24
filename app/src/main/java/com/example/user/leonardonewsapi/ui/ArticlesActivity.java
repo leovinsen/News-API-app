@@ -1,7 +1,5 @@
 package com.example.user.leonardonewsapi.ui;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -11,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,21 +31,23 @@ import java.util.ArrayList;
 
 public class ArticlesActivity extends AppCompatActivity {
 
-    ArrayList<NewsArticle> newsArticles = new ArrayList<NewsArticle>();
+    ArrayList<NewsArticle> newsArticles = new ArrayList<>();
     RecyclerView mRecyclerView;
     NewsArticlesAdapter mAdapter;
-//    String sourceId;
-//    String sourceName;
+    final int pageSize = 30;
+    int pageIndex = 1;
+
+    boolean searching = false;
+    boolean loadingArticles = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        System.out.println("ONCREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_article);
 
         NewsSource source = Repository.getInstance().getLastChosenSource();
-        String sourceId = source.id;
-        String sourceName = source.name;
+        final String sourceId = source.id;
+        final String sourceName = source.name;
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -60,41 +61,64 @@ public class ArticlesActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
 
-        loadData(sourceId);
-    }
-
-    private void loadData(String sourceId){
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        String url = String.format("https://newsapi.org/v2/top-headlines?sources=%s&apiKey=deea836cb7a942699f2e9024b039c2e6", sourceId);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            JSONArray jsonArray = jsonObject.getJSONArray("articles");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jo = jsonArray.getJSONObject(i);
-                                NewsArticle article = NewsArticle.fromJson(jo);
-                                newsArticles.add(article);
-                            }
-                            mAdapter.notifyDataSetChanged();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+        //Load more articles when user reaches end of list
+        //Only when user is not searching
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println(error.toString());
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (!searching) {
+                        pageIndex++;
+                        loadData(sourceId, pageSize, pageIndex);
+                    }
+                }
             }
         });
 
-        queue.add(stringRequest);
+        loadData(sourceId, pageSize, pageIndex);
+    }
+
+    private void loadData(String sourceId, int pageSize, int pageNo){
+        if(!loadingArticles){
+            loadingArticles = true;
+            RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+            String url = String.format("https://newsapi.org/v2/everything" +
+                    "?sources=%s" +
+                    "&pageSize=%d" +
+                    "&page=%d" +
+                    "&apiKey=deea836cb7a942699f2e9024b039c2e6", sourceId, pageSize, pageNo);
+
+            // Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONArray jsonArray = jsonObject.getJSONArray("articles");
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jo = jsonArray.getJSONObject(i);
+                                    NewsArticle article = NewsArticle.fromJson(jo);
+                                    newsArticles.add(article);
+                                }
+                                mAdapter.notifyDataSetChanged();
+                                loadingArticles = false;
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println(error.toString());
+                }
+            });
+
+            queue.add(stringRequest);
+        }
     }
 
     @Override
@@ -102,24 +126,19 @@ public class ArticlesActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
-
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
+                if(s == null || s.isEmpty()) searching = false;
+                else searching = true;
+
                 mAdapter.getFilter().filter(s);
                 return false;
             }

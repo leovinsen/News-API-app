@@ -5,14 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import com.example.user.leonardonewsapi.R;
 import com.example.user.leonardonewsapi.model.NewsArticle;
 
 public class ArticleWebPageActivity extends AppCompatActivity{
-
-    WebView mWebView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,6 +27,7 @@ public class ArticleWebPageActivity extends AppCompatActivity{
         Intent intent = getIntent();
         String url = intent.getStringExtra(NewsArticle.articleUrl);
         WebView myWebView = new WebView(getApplicationContext());
+        myWebView.getSettings().setJavaScriptEnabled(true);
         setContentView(myWebView);
         myWebView.loadUrl(url);
     }

@@ -23,7 +23,6 @@ public class NewsSourcesAdapter extends RecyclerView.Adapter<NewsSourcesAdapter.
     private Context mContext;
 
     public NewsSourcesAdapter(ArrayList<NewsSource>list){
-        System.out.println("hi");
         this.list=list;
     }
     @Override
@@ -41,13 +40,12 @@ public class NewsSourcesAdapter extends RecyclerView.Adapter<NewsSourcesAdapter.
         holder.mParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ///Open new Activity for news
                 NewsSource source = list.get(position);
-                Toast.makeText(mContext, source.toString(), Toast.LENGTH_LONG).show();
+
+                //Open a list of articles from that source
                 Intent intent = new Intent(mContext, ArticlesActivity.class);
+                //Save the chosen source to repository
                 Repository.getInstance().setLastChosenSource(source);
-//                intent.putExtra(NewsSource.sourceId, source.id); //Optional parameters
-//                intent.putExtra(NewsSource.sourceName, source.name);
                 mContext.startActivity(intent);
             }
         });

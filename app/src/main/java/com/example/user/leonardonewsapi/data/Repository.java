@@ -22,6 +22,7 @@ public class Repository {
     private static Repository repo;
 
     private ArrayList<NewsSource> newsSources;
+    private NewsSource lastChosenSource;
 
     public static Repository getInstance() {
         if (repo == null) {
@@ -33,6 +34,14 @@ public class Repository {
 
     public ArrayList<NewsSource> getSourcesList() {
         return newsSources;
+    }
+
+    public NewsSource getLastChosenSource(){
+        return lastChosenSource;
+    }
+
+    public void setLastChosenSource(NewsSource source){
+        this.lastChosenSource = source;
     }
 
     public void fetchNewsSources(Context context, final NewsSourcesAdapter newsSourcesAdapter) {

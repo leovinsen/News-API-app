@@ -12,8 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.user.leonardonewsapi.R;
+import com.example.user.leonardonewsapi.data.Repository;
 import com.example.user.leonardonewsapi.model.NewsSource;
-import com.example.user.leonardonewsapi.ui.NewsActivity;
+import com.example.user.leonardonewsapi.ui.ArticlesActivity;
 
 import java.util.ArrayList;
 
@@ -43,9 +44,10 @@ public class NewsSourcesAdapter extends RecyclerView.Adapter<NewsSourcesAdapter.
                 ///Open new Activity for news
                 NewsSource source = list.get(position);
                 Toast.makeText(mContext, source.toString(), Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(mContext, NewsActivity.class);
-                intent.putExtra(NewsSource.sourceId, source.id); //Optional parameters
-                intent.putExtra(NewsSource.sourceName, source.name);
+                Intent intent = new Intent(mContext, ArticlesActivity.class);
+                Repository.getInstance().setLastChosenSource(source);
+//                intent.putExtra(NewsSource.sourceId, source.id); //Optional parameters
+//                intent.putExtra(NewsSource.sourceName, source.name);
                 mContext.startActivity(intent);
             }
         });

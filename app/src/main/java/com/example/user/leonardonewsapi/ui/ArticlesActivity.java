@@ -1,13 +1,16 @@
 package com.example.user.leonardonewsapi.ui;
 
-import android.content.Intent;
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,6 +20,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.user.leonardonewsapi.R;
 import com.example.user.leonardonewsapi.adapters.NewsArticlesAdapter;
+import com.example.user.leonardonewsapi.data.Repository;
 import com.example.user.leonardonewsapi.model.NewsArticle;
 import com.example.user.leonardonewsapi.model.NewsSource;
 
@@ -26,19 +30,23 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class NewsActivity extends AppCompatActivity {
+public class ArticlesActivity extends AppCompatActivity {
 
     ArrayList<NewsArticle> newsArticles = new ArrayList<NewsArticle>();
     RecyclerView mRecyclerView;
     NewsArticlesAdapter mAdapter;
+//    String sourceId;
+//    String sourceName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        System.out.println("ONCREATE");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_article_activity);
-        Intent intent = getIntent();
-        String sourceId = intent.getStringExtra(NewsSource.sourceId); //if it's a string you stored.
-        String sourceName = intent.getStringExtra(NewsSource.sourceName);
+        setContentView(R.layout.activity_news_article);
+
+        NewsSource source = Repository.getInstance().getLastChosenSource();
+        String sourceId = source.id;
+        String sourceName = source.name;
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
@@ -51,8 +59,6 @@ public class NewsActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),
-                DividerItemDecoration.HORIZONTAL));
 
         loadData(sourceId);
     }
@@ -90,4 +96,37 @@ public class NewsActivity extends AppCompatActivity {
 
         queue.add(stringRequest);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
+
+        return true;
+    }
+
 }

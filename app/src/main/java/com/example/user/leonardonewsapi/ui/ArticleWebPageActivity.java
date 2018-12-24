@@ -1,11 +1,14 @@
 package com.example.user.leonardonewsapi.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 
 import com.example.user.leonardonewsapi.R;
+import com.example.user.leonardonewsapi.model.NewsArticle;
 
 public class ArticleWebPageActivity extends AppCompatActivity{
 
@@ -14,8 +17,17 @@ public class ArticleWebPageActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_article_web_page);
-        mWebView = findViewById(R.id.article_web_view);
-        mWebView.loadUrl("http://www.example.com");
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
+        actionBar.setTitle("");
+
+        Intent intent = getIntent();
+        String url = intent.getStringExtra(NewsArticle.articleUrl);
+        WebView myWebView = new WebView(getApplicationContext());
+        setContentView(myWebView);
+        myWebView.loadUrl(url);
     }
 }

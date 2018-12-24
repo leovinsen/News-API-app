@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,13 +21,27 @@
         </activity>
 
         <activity
-            android:name=".ui.NewsActivity"
+            android:name=".ui.ArticlesActivity"
             android:label="@string/app_name"
             android:parentActivityName="com.example.user.leonardonewsapi.ui.MainActivity">
+
+
         <!-- Parent activity meta-data to support 4.0 and lower -->
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.example.user.leonardonewsapi.ui.MainActivity" />
+        </activity>
+
+
+
+        <activity android:name=".ui.ArticleWebPageActivity"
+            android:parentActivityName=".ui.ArticlesActivity">
+
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.user.leonardonewsapi.ui.ArticlesActivity"/>
+
         </activity>
 
     </application>

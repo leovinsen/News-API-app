@@ -7,15 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.user.leonardonewsapi.R;
 import com.example.user.leonardonewsapi.model.NewsArticle;
-import com.example.user.leonardonewsapi.model.NewsSource;
 import com.example.user.leonardonewsapi.ui.ArticleWebPageActivity;
-import com.example.user.leonardonewsapi.ui.NewsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -23,29 +22,34 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapter.MyViewHolder>{
+public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapter.MyViewHolder> implements Filterable{
 
-    private ArrayList<NewsArticle> list;
+    private ArrayList<NewsArticle> originalData;
+    private ArrayList<NewsArticle> filteredData;
     private Context mContext;
 
     public NewsArticlesAdapter(ArrayList<NewsArticle>list){
-        this.list=list;
+        this.originalData=list;
+        this.filteredData=list;
     }
     @Override
     public NewsArticlesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        View view= LayoutInflater.from(mContext).inflate(R.layout.news_article,parent,false);
+        View view= LayoutInflater.from(mContext).inflate(R.layout.news_article_card,parent,false);
 
         return new NewsArticlesAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final NewsArticlesAdapter.MyViewHolder holder, final int position) {
-        NewsArticle article = list.get(position);
+        NewsArticle article = filteredData.get(position);
 
         //Load image
         Picasso.get()
-                .load(article.urlToImage).fit().centerCrop()
+                .load(article.urlToImage)
+                .error(R.drawable.ic_no_image)
+                .centerCrop()
+                .fit()
                 .into(holder.mArticleThumbnail);
         //Set Title
         holder.mArticleTitle.setText(article.title);
@@ -65,8 +69,9 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
         holder.mCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String url = filteredData.get(position).url;
                 Intent intent = new Intent(mContext, ArticleWebPageActivity.class);
-                intent.putExtra(NewsArticle.articleUrl, list.get(position).url); //Optional parameters
+                intent.putExtra(NewsArticle.articleUrl, url); //Optional parameters
                 mContext.startActivity(intent);
             }
         });
@@ -74,9 +79,56 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
     }
 
     @Override
+    public Filter getFilter()
+    {
+        return new Filter()
+        {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence)
+            {
+                FilterResults results = new FilterResults();
+
+                //If there's nothing to filter on, return the original data for your list
+                if(charSequence == null || charSequence.length() == 0)
+                {
+                    results.values = originalData;
+                    results.count = originalData.size();
+                }
+                else
+                {
+                    ArrayList<NewsArticle> filterResultsData = new ArrayList<>();
+
+                    for(NewsArticle article : originalData)
+                    {
+                        //In this loop, you'll filter through originalData and compare each item to charSequence.
+                        //If you find a match, add it to your new ArrayList
+                        //I'm not sure how you're going to do comparison, so you'll need to fill out this conditional
+                        if(article.title.contains(charSequence))
+                        {
+                            filterResultsData.add(article);
+                        }
+                    }
+
+                    results.values = filterResultsData;
+                    results.count = filterResultsData.size();
+                }
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults)
+            {
+                filteredData = (ArrayList<NewsArticle>)filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
+    @Override
     public int getItemCount() {
-        if(list == null) return 0;
-        return list.size();
+        if(filteredData == null) return 0;
+        return filteredData.size();
     }
     public class MyViewHolder extends RecyclerView.ViewHolder {
         CardView mCard;
@@ -151,9 +203,6 @@ public class NewsArticlesAdapter extends RecyclerView.Adapter<NewsArticlesAdapte
             long elapsedDays = elapsedHours / 24;
             if(elapsedDays == 1) dateString = "Yesterday";
             else dateString = String.format("%d days ago", elapsedHours / 24);
-
-
-
         }
 
         return dateString;

@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import com.example.user.leonardonewsapi.R;
@@ -18,12 +16,19 @@ public class ArticleWebPageActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        initActionBar();
+        initWebView();
+    }
+
+    private void initActionBar(){
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
         actionBar.setTitle("");
+    }
 
+    private void initWebView(){
         Intent intent = getIntent();
         String url = intent.getStringExtra(NewsArticle.articleUrl);
         WebView myWebView = new WebView(getApplicationContext());

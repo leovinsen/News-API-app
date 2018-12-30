@@ -50,35 +50,8 @@ public class ArticlesActivity extends AppCompatActivity {
         final String sourceId = source.id;
         final String sourceName = source.name;
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(sourceName);
-
-        mAdapter = new NewsArticlesAdapter(newsArticles);
-
-        mRecyclerView = findViewById(R.id.articles_recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(mAdapter);
-
-        //Load more articles when user reaches end of list
-        //Only when user is not searching
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (!recyclerView.canScrollVertically(1)) {
-                    if (!searching) {
-                        Toast.makeText(ArticlesActivity.this,"Loading more articles...", Toast.LENGTH_LONG).show();
-                        pageIndex++;
-                        loadData(sourceId, pageSize, pageIndex);
-                    }
-                }
-            }
-        });
-
+        initActionBar(sourceName);
+        initRecyclerView(sourceId);
         loadData(sourceId, pageSize, pageIndex);
     }
 
@@ -123,11 +96,45 @@ public class ArticlesActivity extends AppCompatActivity {
         }
     }
 
+    private void initActionBar(String title){
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(title);
+    }
+
+    private void initRecyclerView(final String sourceId){
+        mAdapter = new NewsArticlesAdapter(newsArticles);
+
+        mRecyclerView = findViewById(R.id.articles_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
+
+        //Load more articles when user reaches end of list
+        //Only when user is not searching
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    if (!searching) {
+                        Toast.makeText(ArticlesActivity.this,"Loading more articles...", Toast.LENGTH_LONG).show();
+                        pageIndex++;
+                        loadData(sourceId, pageSize, pageIndex);
+                    }
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
+        //Implement article filtering when user types in the search bar
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -145,8 +152,6 @@ public class ArticlesActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
         return true;
     }
 

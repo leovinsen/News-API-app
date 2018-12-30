@@ -12,9 +12,6 @@ import com.example.user.leonardonewsapi.data.Repository;
 
 public class MainActivity extends AppCompatActivity {
 
-    //IDEA: static arraylist so t is cached
-    //final ArrayList<NewsSource> newsSources = new ArrayList<>();
-
     RecyclerView mRecyclerView;
     NewsSourcesAdapter mAdapter;
 
@@ -30,6 +27,5 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
-
     }
 }

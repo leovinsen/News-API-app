@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+//Singleton Repository Class to store news and articles
 public class Repository {
 
     private static Repository repo;
@@ -28,7 +29,6 @@ public class Repository {
         if (repo == null) {
             repo = new Repository();
         }
-
         return repo;
     }
 

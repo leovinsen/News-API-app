@@ -41,6 +41,7 @@ public class HelperMethods {
         return date;
     }
 
+    //Gets time difference between two Date objects
     public static long[] timeDifference(Date startDate, Date endDate){
         if(startDate == null | endDate == null) return null;
 
@@ -53,7 +54,6 @@ public class HelperMethods {
         different = different % hoursInMilli;
 
         long elapsedMinutes = different / minutesInMilli;
-        //different = different % minutesInMilli;
 
         return new long[]{elapsedHours, elapsedMinutes};
     }

@@ -1,10 +1,10 @@
 package com.example.user.leonardonewsapi.ui;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.user.leonardonewsapi.adapters.NewsSourcesAdapter;
 import com.example.user.leonardonewsapi.R;
